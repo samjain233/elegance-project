@@ -15,8 +15,12 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "mongodb": "^4.11.0",
-    "nodemailer": "^6.8.0"
+    "express-fileupload": "^1.4.0",
+    "express-session": "^1.17.3",
+    "mongodb": "^3.6.3",
+    "mongodb-legacy": "^4.0.0",
+    "nodemailer": "^6.8.0",
+    "socket.io": "^4.5.3"
   },
   "devDependencies": {
     "concurrently": "^7.5.0"

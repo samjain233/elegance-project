@@ -41,12 +41,12 @@ module.exports.register = async (req, res, next) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const verificationCode = verificationHandler(email);
-        const userAdd = await Users.insertOne({ email: email, username: username, password: hashedPassword, verificationCode: verificationCode, isVerified: false });
+        const userAdd = await Users.insertOne({ email: email, username: username, password: hashedPassword, verificationCode: verificationCode, isVerified: false, mediaCount: 0 });
         {
             if (!userAdd.acknowledged) return res.json({ msg: "Something Went Wrong", status: false });
         }
         const user = await Users.findOne({ username: username });
-        const localID = { ID: user._id, isVerified: user.isVerified };
+        const localID = { ID: user._id, username: user.username, isVerified: user.isVerified };
         return res.json({ status: true, localID });
     }
     catch (ex) {
@@ -83,7 +83,7 @@ module.exports.login = async (req, res, next) => {
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid)
             return res.json({ msg: "Incorrect Username or Password", status: false });
-        const localID = { ID: user._id, isVerified: user.isVerified };
+        const localID = { ID: user._id, username: user.username, isVerified: user.isVerified };
         return res.json({ status: true, localID });
     } catch (ex) {
         next(ex);

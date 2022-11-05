@@ -61,5 +61,16 @@ export default function Videos({ shareMedia, roomName, socket, hideShareButton, 
 
 // styling of components
 const Container = styled.div`
-
+background-color: rgba(0, 0, 0, 0.2);
+width: 100vw;
+height: 90vh;
+background-color: black;
+overflow: auto;
+color: black;
+display: flex;
+flex-direction: column;
+ .video{
+    background-color: white;
+    margin: 5px;
+ }
 `;

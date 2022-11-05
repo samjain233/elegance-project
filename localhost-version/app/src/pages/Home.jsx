@@ -259,5 +259,44 @@ export default function Home() {
 
 //styling of home page
 const HomeContainer = styled.div`
-
+height: 100vh;
+width: 100vw;
+background-color: pink;
+ #header{
+  display: flex;
+  width: 100vw;
+  height: 10vh;
+  align-items: center;
+  justify-content: right;
+  background-color: black;
+   #navigate{
+    width: 50vw;
+    height: 5vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+     #notInRoom{
+      width: 25vw;
+      height: 5vh;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+     }
+     #inRoom{
+      width: 25vw;
+      height: 5vh;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+     }
+    }
+   }
+ #body{
+  display: flex;
+  width: 100vw;
+  height: 90vh;
+  margin: auto;
+  align-items: flex-end;
+  justify-content: center;
+ }
 `;

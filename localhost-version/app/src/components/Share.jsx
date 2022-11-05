@@ -222,5 +222,49 @@ export default function Share({ isSharingMedia, isRecievingMedia, roomName, sock
 
 // styling of components
 const Container = styled.div`
-
+height: 80vh;
+background-color: rgba(300, 300, 300, 0.2);
+display: flex;
+justify-content: center;
+align-items: center;
+color: black;
+ #primaryRoomScreen{
+  height: 80vh;
+  width: 100vw;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+   #videoPlayerCover{
+    color: white;
+    width: 30vw;
+    height: 30vh;
+    background-color: brown;
+    display: flex;
+    flex-direction: column;
+    justify content: center;
+    align items: center;
+    margin: auto;
+     #serverButtons{
+      display: flex;
+      flex-direction: rows;
+      justify content: center;
+      align items: center;
+     }
+    }
+   #videoPlayerDiv{
+    display: flex;
+    justify content: center;
+    align items: center;
+    margin:auto;
+    }
+   #videos{
+    background-color: brown;
+    width: 50vw;
+    height: 80vh;
+    overflow: auto;
+    }
+   .video{
+    background-color: white;
+    margin: 5px;
+    }
+ }
 `;  

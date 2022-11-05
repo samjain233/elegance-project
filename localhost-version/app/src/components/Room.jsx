@@ -31,5 +31,36 @@ export default function Room({ divName, roomMembers, roomJoinedName, isRoomCreat
 
 // styling of components
 const RoomWindow = styled.div`
-
+#roomContainerHidden{
+    display: none !important;
+}
+#roomContainer{
+    background-color: rgba(0, 0, 0, 0.2);
+    height: 90vh;
+    width: 100vw;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+    #roomInfo{
+     display: flex;
+     flex-direction: row;
+     align-items: center;
+     height: 10vh;
+     width: 100vw;
+     background-color: black;
+     overflow: auto;
+     button{
+        width: 100px;
+        height: 40px;
+     }
+     }
+    #media{
+     height: 80vh;
+     width: 100vw;
+     background-color: white;
+     }
+}
 `;

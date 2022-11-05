@@ -99,5 +99,41 @@ export default function Upload({ trigger, setTrigger }) {
 
 // styling of components
 const UploadWindow = styled.div`
-
+background-color: rgba(0, 0, 0, 0.2);
+height: 100vh;
+width: 100vw;
+position: fixed;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+#container {
+  height: 50vh;
+  width: 70vw;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  form {
+    height: 20vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    #input-box{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #button-box{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
 `;

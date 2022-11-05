@@ -71,5 +71,21 @@ export default function Player({ trigger, setTrigger, fileName, server }) {
 
 // styling of components
 const PlayerWindow = styled.div`
-
+background-color: rgba(0, 0, 0, 0.7 );
+height: 90vh;
+width: 100vw;
+position: fixed;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+ #serverButtons {
+    color: white;
+    background-color: blue;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    }
+}
 `;

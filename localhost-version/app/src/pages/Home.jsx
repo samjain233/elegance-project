@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Upload from "../components/Upload";
 import Videos from "../components/Videos";
+import Playlist from "../components/Playlist";
+import axios from "axios";
 import styled from "styled-components";
 import Room from "../components/Room";
 import { io } from "socket.io-client";
@@ -9,6 +11,7 @@ import { host } from "../Routes";
 import cryptoRandomString from 'crypto-random-string';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { playlistRequestRoute } from "../Routes";
 
 export default function Home() {
   //checking key to access home page, otherwise redirect to login page
@@ -16,6 +19,7 @@ export default function Home() {
 
   //variables
   const [values, setValues] = useState({ roomCreator: "" });
+  const [panel, setPanel] = useState("videos");
   const [uploadPopup, setUploadPopup] = useState(false);
   const [roomPopupDiv, setRoomPopupDiv] = useState("roomContainerHidden");
   const [roomJoinedName, setRoomJoinedName] = useState("");
@@ -80,6 +84,13 @@ export default function Home() {
           const localID = await JSON.parse(localStorage.getItem(process.env.WEBSITE_LOCALHOST_KEY));
           const payload = { roomName: roomName, username: localID.username }
           socket.current.emit("exit-room", payload);
+          setRoomPlayerFileName("");
+          setRoomPlayerFileTitle("");
+          setRoomPlayerFileServer("");
+          setRoomPlayerFileDescription("");
+          setRoomPopupDiv("roomContainerHidden");
+          setIsRecievingMedia(false);
+          setIsSharingMedia(false);
           setInRoom(false);
           setRoomJoinedName("");
           setRoomMembers({ owner: [], visitors: [] });
@@ -136,6 +147,10 @@ export default function Home() {
     const localID = await JSON.parse(localStorage.getItem(process.env.WEBSITE_LOCALHOST_KEY));
     const payload = { roomName: roomJoinedName, username: localID.username }
     socket.current.emit("leave-room", payload);
+    setRoomPlayerFileName("");
+    setRoomPlayerFileTitle("");
+    setRoomPlayerFileServer("");
+    setRoomPlayerFileDescription("");
     setRoomPopupDiv("roomContainerHidden");
     setIsRecievingMedia(false);
     setIsSharingMedia(false);
@@ -150,6 +165,10 @@ export default function Home() {
     const localID = await JSON.parse(localStorage.getItem(process.env.WEBSITE_LOCALHOST_KEY));
     const payload = { roomName: roomJoinedName, username: localID.username }
     socket.current.emit("delete-room", payload);
+    setRoomPlayerFileName("");
+    setRoomPlayerFileTitle("");
+    setRoomPlayerFileServer("");
+    setRoomPlayerFileDescription("");
     setRoomPopupDiv("roomContainerHidden");
     setIsRecievingMedia(false);
     setIsSharingMedia(false);
@@ -164,34 +183,42 @@ export default function Home() {
   };
   const showShareButton = () => {
     setIsRecievingMedia(false);
+    setRoomPlayerFileName("");
+    setRoomPlayerFileTitle("");
+    setRoomPlayerFileServer("");
+    setRoomPlayerFileDescription("");
   };
 
+
+
+  const [playlistList, setPlaylistList] = useState([]);
+
+
+  useEffect(() => {
+    const getAllPlaylist = async () => {
+      console.log("playlistget");
+      const localID = await JSON.parse(localStorage.getItem(process.env.WEBSITE_LOCALHOST_KEY));
+      const username = localID.username;
+      const { data } = await axios.post(playlistRequestRoute, { username });
+      setPlaylistList(data.playlist);
+    }; getAllPlaylist();
+  }, []);
+
+
+
   const handleChange = (event) => { setValues({ ...values, [event.target.name]: event.target.value }) };
+
+  const [roomPlayerFileName, setRoomPlayerFileName] = useState("");
+  const [roomPlayerFileTitle, setRoomPlayerFileTitle] = useState("");
+  const [roomPlayerFileDescription, setRoomPlayerFileDescription] = useState("");
+  const [roomPlayerFileServer, setRoomPlayerFileServer] = useState("");
+
 
   return (
     <HomeContainer>
       <div id="header">
+        <div id="elegance">Elegance</div>
         <div id="navigate">
-          <button>Profile</button>
-          {
-            (inRoom) ?
-              (<div>
-                {
-                  (roomPopupDiv === "roomContainerHidden") ?
-                    (
-                      <button onClick={() => setRoomPopupDiv("roomContainer")}>Open Room</button>
-                    )
-                    :
-                    (
-                      <button onClick={() => setRoomPopupDiv("roomContainerHidden")}>Close Room</button>
-                    )
-                }
-              </div>
-              )
-              :
-              ("")  
-          }
-          <button onClick={() => setUploadPopup(true)}>Upload</button>
           {
             (inRoom) ?
               (
@@ -205,34 +232,42 @@ export default function Home() {
                           {
                             (isSharingMedia) ?
                               (
-                                <button onClick={() => setIsSharingMedia(false)}>Stop Sharing</button>
+                                <button className="button" onClick={() => { setIsSharingMedia(false); setRoomPlayerFileName(""); setRoomPlayerFileTitle(""); setRoomPlayerFileServer(""); setRoomPlayerFileDescription(""); }}><span className="text">Stop Sharing</span></button>
                               )
                               :
                               (
-                                <button onClick={() => setIsSharingMedia(true)}>Share</button>
+                                <button className="button" onClick={() => setIsSharingMedia(true)}><span className="text">Share</span></button>
                               )
                           }
                         </div>
                       )
                   }
                   {
-                    (!isRoomCreated) ?
-                      (
-                        <button onClick={leaveRoom}>Leave Room</button>
+                    (inRoom) ?
+                      (<div>
+                        {
+                          (roomPopupDiv === "roomContainerHidden") ?
+                            (
+                              <button className="button" onClick={() => setRoomPopupDiv("roomContainer")}><span className="text">Open Room</span></button>
+                            )
+                            :
+                            (
+                              <button className="button" onClick={() => setRoomPopupDiv("roomContainerHidden")}><span className="text">Close Room</span></button>
+                            )
+                        }
+                      </div>
                       )
                       :
-                      (
-                        ""
-                      )
+                      ("")
                   }
                   {
-                    (isRoomCreated) ?
+                    (!isRoomCreated) ?
                       (
-                        <button onClick={deleteRoom}>Delete Room</button>
+                        <button className="button" onClick={leaveRoom}><span className="text">Leave Room</span></button>
                       )
                       :
                       (
-                        ""
+                        <button className="button" onClick={deleteRoom}><span className="text">Delete Room</span></button>
                       )
                   }
                 </div>
@@ -240,18 +275,31 @@ export default function Home() {
               :
               (
                 <div id="notInRoom">
-                  <button onClick={createRoom}>Create Room</button>
-                  <input type="text" placeholder="Enter Room ID" name="roomCreator" onChange={(e) => handleChange(e)} />
-                  <button onClick={joinRoom}>Join Room</button>
+                  <input type="text" className="form__field" placeholder="Enter Room ID" name="roomCreator" onChange={(e) => handleChange(e)} />
+                  <button className="button" onClick={joinRoom}><span className="text">Join Room</span></button>
+                  <button className="button" onClick={createRoom}><span className="text">Create Room</span></button>
                 </div>
               )
           }
+          <button className="button"><span className="text">Profile</span></button>
+          <button className="button" onClick={() => {setUploadPopup(true); console.log(roomPlayerFileName);}}><span className="text">Upload</span></button>
+          <button className="button" onClick={() => setPanel("videos")}><span className="text">Videos</span></button>
+          <button className="button" onClick={() => { setPanel("playlist"); }}><span className="text">Playlist</span></button>
         </div>
       </div>
       <Upload trigger={uploadPopup} setTrigger={setUploadPopup} />
-      <Room divName={roomPopupDiv} roomMembers={roomMembers} roomJoinedName={roomJoinedName} isRoomCreated={isRoomCreated} isSharingMedia={isSharingMedia} isRecievingMedia={isRecievingMedia} doWait={doWait} inRoom={inRoom} hideShareButton={hideShareButton} showShareButton={showShareButton} socket={socket} />
+      <Room roomPlayerFileName={roomPlayerFileName} roomPlayerFileServer={roomPlayerFileServer} roomPlayerFileTitle={roomPlayerFileTitle} roomPlayerFileDescription={roomPlayerFileDescription} divName={roomPopupDiv} roomMembers={roomMembers} roomJoinedName={roomJoinedName} isRoomCreated={isRoomCreated} isSharingMedia={isSharingMedia} isRecievingMedia={isRecievingMedia} doWait={doWait} inRoom={inRoom} hideShareButton={hideShareButton} showShareButton={showShareButton} socket={socket} />
       <div id="body">
-          <Videos isSharingMedia={isSharingMedia} isRecievingMedia={isRecievingMedia} roomName={roomJoinedName} hideShareButton={hideShareButton} showShareButton={showShareButton} socket={socket} />
+        {
+          (panel === "videos") ?
+            (
+              <Videos setRoomPopupDiv={setRoomPopupDiv} setRoomPlayerFileName={setRoomPlayerFileName} setRoomPlayerFileServer={setRoomPlayerFileServer} setRoomPlayerFileTitle={setRoomPlayerFileTitle} setRoomPlayerFileDescription={setRoomPlayerFileDescription} playlistList={playlistList} isSharingMedia={isSharingMedia} isRecievingMedia={isRecievingMedia} roomName={roomJoinedName} hideShareButton={hideShareButton} showShareButton={showShareButton} socket={socket} />
+            )
+            :
+            (
+              <Playlist setRoomPopupDiv={setRoomPopupDiv} setRoomPlayerFileName={setRoomPlayerFileName} setRoomPlayerFileServer={setRoomPlayerFileServer} setRoomPlayerFileTitle={setRoomPlayerFileTitle} setRoomPlayerFileDescription={setRoomPlayerFileDescription} isSharingMedia={isSharingMedia} playlistList={playlistList} setPlaylistList={setPlaylistList} />
+            )
+        }
       </div>
     </HomeContainer>
   )

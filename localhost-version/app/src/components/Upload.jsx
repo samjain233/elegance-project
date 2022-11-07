@@ -30,6 +30,7 @@ export default function Upload({ trigger, setTrigger }) {
         toast.error(err.response.data.msg, toastOptions);
       }
     }
+    setTrigger(false);
   };
 
 
@@ -48,6 +49,7 @@ export default function Upload({ trigger, setTrigger }) {
         toast.error(err.response.data.msg, toastOptions);
       }
     }
+    setTrigger(false);
   };
 
   //both server upload
@@ -65,6 +67,7 @@ export default function Upload({ trigger, setTrigger }) {
         toast.error(err.response.data.msg, toastOptions);
       }
     }
+    setTrigger(false);
   };
 
 
@@ -74,19 +77,19 @@ export default function Upload({ trigger, setTrigger }) {
         trigger === true ?
           (<UploadWindow>
             <div id="container">
+              <button className="buttonUpload" onClick={() => setTrigger(false)}>Hide</button>
               <form>
-                <input type='file' accept=".mp4" onChange={(e) => fileHandleChange(e)} />
+                <input className="buttonUpload" type='file' accept=".mp4" onChange={(e) => fileHandleChange(e)} />
                 <div id="input-box">
-                  <input type="text" placeholder="Title" name="title" onChange={(e) => textHandleChange(e)} />
-                  <input type="text" placeholder="Description" name="description" onChange={(e) => textHandleChange(e)} />
+                  <input className="form__field" type="text" placeholder="Title" name="title" onChange={(e) => textHandleChange(e)} />
+                  <input className="form__field" type="text" placeholder="Description" name="description" onChange={(e) => textHandleChange(e)} />
                 </div>
                 <div id="button-box">
-                  <button onClick={eleganceServer}>Upload to Elegance</button>
-                  <button onClick={mongoServer}>Upload to MongoDB</button>
-                  <button onClick={emServer}>Upload to Both</button>
+                  <button className="buttonUpload" onClick={eleganceServer}>Upload to Elegance</button>
+                  <button className="buttonUpload" onClick={mongoServer}>Upload to MongoDB</button>
+                  <button className="buttonUpload" onClick={emServer}>Upload to Both</button>
                 </div>
               </form>
-              <button onClick={() => setTrigger(false)}>Hide</button>
             </div>
           </UploadWindow>)
           :

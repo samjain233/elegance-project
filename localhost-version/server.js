@@ -140,9 +140,14 @@ io.on("connection", (socket) => {
         socket.to(payload.roomName).emit("master-reciever");
     });
 
+    socket.on("media-master-action-command", (payload) => {
+        socket.to(payload.roomName).emit("master-reciever-action", payload);
+    });
+
     //to send a particular media
     socket.on("media-send", (payload) => {
         socket.to(payload.roomName).emit("media-recieve", payload);
+        console.log("lulu");
     });
 
     //to kill active sharing

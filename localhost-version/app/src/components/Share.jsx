@@ -4,44 +4,76 @@ import axios from "axios";
 import { eleganceRequestRoute, mongoRequestRoute } from "../Routes";
 import { videoRequestRoute } from "../Routes";
 import "react-toastify/dist/ReactToastify.css";
+import Videos from "./Videos";
 
-export default function Share({ isSharingMedia, isRecievingMedia, roomName, socket, hideShareButton, showShareButton }) {
+export default function Share({ roomPlayerFileName, roomPlayerFileServer, roomPlayerFileTitle, roomPlayerFileDescription, isSharingMedia, isRecievingMedia, roomMembers, roomName, socket, hideShareButton, showShareButton }) {
 
     const [fileName, setFileName] = useState("");
+    const [fileTitle, setFileTitle] = useState("");
+    const [fileDescription, setFileDescription] = useState("");
     const [server, setServer] = useState("");
     const [currentServer, setCurrentServer] = useState("");
     const [triggerPlayerWindow, setTriggerPlayerWindow] = useState(false);
 
+    useEffect(() => {
+        const roomMasterCommand = async () => {
+            if (!roomPlayerFileName) {
+                setFileName("");
+                setServer("");
+                setFileTitle("");
+                setFileDescription("");
+                setCurrentServer("");
+            }
+            if (roomPlayerFileName) toRoomPlayer(roomPlayerFileName, roomPlayerFileServer, roomPlayerFileTitle, roomPlayerFileDescription);
+        }; roomMasterCommand();
+    }, [roomPlayerFileName]);
+
     //playing media in room
-    const toRoomPlayer = async (name, server) => {
+    const toRoomPlayer = async (name, server, title, description) => {
         setTriggerPlayerWindow(false);
         setServer(server);
         setFileName(name);
+        setFileTitle(title);
+        setFileDescription(description);
         if (server === "both") setCurrentServer(mongoRequestRoute);
         else if (server === "mongo") setCurrentServer(mongoRequestRoute);
         else if (server === "elegance") setCurrentServer(eleganceRequestRoute);
-        const delay = await new Promise(res => setTimeout(res, 1000));
+        const delay = await new Promise(res => setTimeout(res, 0));
         if (isSharingMedia) {
-            const payload = { name, server, roomName };
+            const payload = { name: name, server: server, roomName: roomName, title: title, description: description };
             socket.current.emit("media-send", payload);
         }
         setTriggerPlayerWindow(true);
     };
+
 
     //server change
     const serverChange = async (newServer) => {
         setTriggerPlayerWindow(false);
         if (newServer === "mongo") setCurrentServer(mongoRequestRoute);
         else if (newServer === "elegance") setCurrentServer(eleganceRequestRoute);
-        const delay = await new Promise(res => setTimeout(res, 1000));
+        const delay = await new Promise(res => setTimeout(res, 0));
         if (isSharingMedia) {
             const name = fileName;
+            const title = fileTitle;
+            const description = fileDescription;
             const server = newServer;
-            const payload = { name, server, roomName };
+            const payload = { name: name, server: server, roomName: roomName, title: title, description: description };
             socket.current.emit("media-send", payload);
         }
         setTriggerPlayerWindow(true);
     };
+
+    useEffect(() => {
+        const startSharing = async () => {
+            if (isSharingMedia && fileName) {
+                const video = document.getElementById("videoPlayer");
+                const payload = { roomName: roomName, name: fileName, title: fileTitle, description: fileDescription, server: server, position: video.currentTime, isVideoPaused: video.paused };
+                console.log(payload);
+                socket.current.emit("media-master-action-command", payload);
+            }
+        }; startSharing();
+    }, [roomMembers]);
 
     //socket io media handlers
     useEffect(() => {
@@ -71,9 +103,25 @@ export default function Share({ isSharingMedia, isRecievingMedia, roomName, sock
                     console.log("successfully recieving");
                     hideShareButton();
                 });
+                socket.current.on("master-reciever-action", async (payload) => {
+                    setFileTitle(payload.title);
+                    setFileDescription(payload.description);
+                    setFileName(payload.name);
+                    setTriggerPlayerWindow(false);
+                    hideShareButton();
+                    if (payload.server === "both") setCurrentServer(mongoRequestRoute);
+                    else if (payload.server === "mongo") setCurrentServer(mongoRequestRoute);
+                    else if (payload.server === "elegance") setCurrentServer(eleganceRequestRoute);
+                    setTriggerPlayerWindow(true);
+                    const delay = await new Promise(res => setTimeout(res, 0));
+                    const video = document.getElementById("videoPlayer");
+                    video.currentTime = payload.position;
+                    if (payload.isVideoPaused) video.pause();
+                });
             }
         }; recieveMedia();
     }, [roomName]);
+
 
 
     const changePosition = () => {
@@ -103,11 +151,13 @@ export default function Share({ isSharingMedia, isRecievingMedia, roomName, sock
             if (isRecievingMedia) {
                 socket.current.on("media-recieve", async (payload) => {
                     setTriggerPlayerWindow(false);
+                    setFileTitle(payload.title);
+                    setFileDescription(payload.description);
                     setFileName(payload.name);
                     if (payload.server === "both") setCurrentServer(mongoRequestRoute);
                     else if (payload.server === "mongo") setCurrentServer(mongoRequestRoute);
                     else if (payload.server === "elegance") setCurrentServer(eleganceRequestRoute);
-                    const delay = await new Promise(res => setTimeout(res, 1000));
+                    const delay = await new Promise(res => setTimeout(res, 0));
                     setTriggerPlayerWindow(true);
                 });
                 socket.current.on("apply-new-position-request", async (newPosition) => {
@@ -124,6 +174,11 @@ export default function Share({ isSharingMedia, isRecievingMedia, roomName, sock
                 });
                 socket.current.on("kill-active-recieving", async () => {
                     setTriggerPlayerWindow(false);
+                    setFileName("");
+                    setCurrentServer("");
+                    setServer("");
+                    setFileTitle("");
+                    setFileDescription("");
                     showShareButton();
                     console.log("killed");
                 });
@@ -146,74 +201,79 @@ export default function Share({ isSharingMedia, isRecievingMedia, roomName, sock
         <>
             <Container>
                 {
-                    (isSharingMedia) ?
-                        (<div id="primaryRoomScreen">
-                            <div id="videoPlayerCover">
-                                {
-                                    (server === "both") ?
-                                        (
-                                            <div id="serverButtons">
-                                                <p>Select Server:</p>
-                                                <button onClick={() => { serverChange("elegance"); }}>Elegance</button>
-                                                <button onClick={() => { serverChange("mongo"); }}>Mongo</button>
-                                            </div>
-                                        )
-                                        :
-                                        (<div>
-                                            {
-                                                (fileName) ?
-                                                (`This Video is available in only ${server}`)
-                                                :
-                                                ("")
-                                            }
-                                        </div>)
-                                }
-                                <div id="videoPlayerDiv">
-                                    {
-                                        (triggerPlayerWindow) ?
-                                            (<video id="videoPlayer" width="300" controls controlsList="noplaybackrate nodownload" muted autoPlay={true} onPause={() => pause()} onSeeking={() => changePosition()} onPlay={() => play()}>
-                                                <source src={`${currentServer}` + `${fileName}`} type="video/mp4" />
-                                            </video>)
-                                            :
-                                            (<div>Loading</div>)
-                                    }
-                                </div>
-                            </div>
-                            <div id="videos">
-                                {
-                                    videos.map((video) => {
-                                        return (
-                                            <div onClick={() => toRoomPlayer(video.name, video.server)} className="video" key={video._id}>
-                                                <p>Title - {video.title}</p>
-                                                <p>Description - {video.description}</p>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </div>
-                            I</div>)
-                        :
-                        (<div id="videoPlayerCover">
+                    (fileName) ?
+                        (<div>
                             {
-                                (isRecievingMedia) ?
-                                    (
-                                        <div id="videoPlayerCover">
-                                            <div id="videoPlayerDiv">
+                                (isSharingMedia) ?
+                                    (<div id="primaryRoomScreen">
+                                        <div className="topBanner">
+                                            <div className="serverInformation">
                                                 {
-                                                    (triggerPlayerWindow) ?
-                                                        (<video id="videoPlayer" width="300" controlsList="noplaybackrate nodownload" muted autoPlay={true} onPause={() => pause()} onSeeking={() => changePosition()} onPlay={() => play()}>
-                                                            <source src={`${currentServer}` + `${fileName}`} type="video/mp4" />
-                                                        </video>)
+                                                    (server === "both") ?
+                                                        (
+                                                            <div className="serverButtons">
+                                                                <p className="normalServerTag">Change Server: </p>
+                                                                <button className="actions" onClick={() => { serverChange("elegance"); }}>Elegance</button>
+                                                                <button className="actions" onClick={() => { serverChange("mongo"); }}>Mongo</button>
+                                                            </div>
+                                                        )
                                                         :
-                                                        (<div>Loading</div>)
+                                                        (<div className="normalServerTag">This video is available in {server} server only.</div>)
                                                 }
                                             </div>
                                         </div>
+                                        <div className="playerBox">
+                                            <div className="player">
+                                                {
+                                                    (triggerPlayerWindow) ?
+                                                        (<video id="videoPlayer" width="300" controls controlsList="noplaybackrate nodownload" autoPlay={true} onPause={() => pause()} onSeeking={() => changePosition()} onPlay={() => play()}>
+                                                            <source src={`${currentServer}` + `${fileName}`} type="video/mp4" />
+                                                        </video>)
+                                                        :
+                                                        ("")
+                                                }
+                                            </div>
+                                            <p className="title">{fileTitle}</p>
+                                            <p className="description">{fileDescription}</p>
+                                        </div>
+                                    </div>
                                     )
                                     :
-                                    (<div id="banner">Click Share to Start Sharing</div>)
+                                    (<div id="videoPlayerCover">
+                                        {
+                                            (isRecievingMedia) ?
+                                                (
+                                                    <div className="playerBox">
+                                                        <div className="player">
+                                                            {
+                                                                (triggerPlayerWindow) ?
+                                                                    (<video id="videoPlayer" width="300" controlsList="noplaybackrate nodownload" autoPlay={true} onPause={() => pause()} onSeeking={() => changePosition()} onPlay={() => play()}>
+                                                                        <source src={`${currentServer}` + `${fileName}`} type="video/mp4" />
+                                                                    </video>)
+                                                                    :
+                                                                    ("")
+                                                            }
+                                                        </div>
+                                                        <div className="recieverMeta">
+                                                            <div>
+                                                                <p className="title">{fileTitle}</p>
+                                                                <p className="description">{fileDescription}</p>
+                                                            </div>
+                                                            <button className="actions" onClick={() => { document.getElementById("videoPlayer").muted = !(document.getElementById("videoPlayer").muted); }}>Mute</button>
+                                                        </div>
+                                                    </div>
+                                                )
+                                                :
+                                                (<div id="banner">Click Share to Start Sharing</div>)
+                                        }
+                                    </div>)
                             }
-                        </div>)
+                        </div>
+                        )
+                        :
+                        (
+                            "Share with Friends"
+                        )
                 }
             </Container>
         </>

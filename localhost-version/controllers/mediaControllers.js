@@ -1,4 +1,4 @@
-const { Users, Metadata, Media } = require("../collections/mongoCollections");
+const { Users, Metadata, Media, Playlist } = require("../collections/mongoCollections");
 const { Readable } = require('stream');
 const fs = require("fs");
 const mongodb = require('mongodb');
@@ -46,8 +46,7 @@ module.exports.mongoServer = async (req, res, next) => {
         const title = req.body.title;
         const description = req.body.description;
         const fileType = file.mimetype;
-        // const username = req.body.username;
-        const username = "subrat";
+        const username = req.body.username;
         const user = await Users.findOne({ username: username });
         let newMediaCount = user.mediaCount + 1;
         const fileName = user._id + newMediaCount + ".mp4";
@@ -105,17 +104,6 @@ module.exports.emServer = async (req, res, next) => {
 
 };
 
-//getting all videos
-module.exports.videoRequest = async (req, res, next) => {
-    try {
-        const videos = await Metadata.find({}).toArray();
-        return res.json({ status: true, videos: videos });
-    }
-    catch (ex) {
-        next(ex);
-    }
-
-};
 
 //stream content from elegance server
 module.exports.eleganceRequest = async (req, res, next) => {
@@ -168,6 +156,83 @@ module.exports.mongoRequest = async (req, res, next) => {
             const downloadStream = bucket.openDownloadStreamByName(`${fileName}`, { start });
             downloadStream.pipe(res);
         });
+    }
+    catch (ex) {
+        next(ex);
+    }
+};
+
+
+//getting all videos
+module.exports.videoRequest = async (req, res, next) => {
+    try {
+        const videos = await Metadata.find({}).toArray();
+        return res.json({ status: true, videos: videos });
+    }
+    catch (ex) {
+        next(ex);
+    }
+
+};
+
+
+
+//save playlists
+module.exports.playlistSave = async (req, res, next) => {
+    try {
+        const { playlistName, username } = req.body;
+        const playlistNameCheck = await Playlist.findOne({ username: username, playlistName: playlistName });
+        {
+            if (playlistNameCheck) return res.json({ msg: "Playlist name already exist", status: false });
+        }
+        const playlistAdd = await Playlist.insertOne({ username: username, playlistName: playlistName, videos: [] });
+        {
+            if (!playlistAdd.acknowledged) return res.json({ msg: "Something Went Wrong", status: false });
+        }
+        const playlist = await Playlist.findOne({ username: username, playlistName: playlistName });
+        return res.json({ msg: "Playlist succesfully added", playlist: playlist, status: true });
+    }
+    catch (ex) {
+        next(ex);
+    }
+};
+
+//get playlists
+module.exports.playlistRequest = async (req, res, next) => {
+    try {
+        const { username } = req.body;
+        const playlist = await Playlist.find({ username: username }).toArray();
+        return res.json({ status: true, playlist: playlist });
+    }
+    catch (ex) {
+        next(ex);
+    }
+};
+
+//update playlists
+module.exports.playlistUpdate = async (req, res, next) => {
+    try {
+        const { videoToAdd, playlistName, username } = req.body;
+        const videoAdd = await Playlist.updateOne({ username: username, playlistName: playlistName }, { $push: { videos: videoToAdd } });
+        {
+            if (!videoAdd.acknowledged) return res.json({ msg: "Something Went Wrong", status: false });
+        }
+        return res.json({ msg: "Video successfully added", status: true });
+    }
+    catch (ex) {
+        next(ex);
+    }
+};
+
+//videos in a playlists
+module.exports.playlistVideos = async (req, res, next) => {
+    try {
+        const { playlistName, username } = req.body;
+        const playlistVideos = await Playlist.findOne({ username: username, playlistName: playlistName });
+        {
+            if (!playlistVideos.videos) return res.json({ msg: "Something went wrong", status: false });
+        }
+        return res.json({ status: true, playlistVideos: playlistVideos });
     }
     catch (ex) {
         next(ex);

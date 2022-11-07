@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { eleganceRequestRoute, mongoRequestRoute } from "../Routes";
 import "react-toastify/dist/ReactToastify.css";
 
-export default function Player({ trigger, setTrigger, fileName, server }) {
+export default function Player({ trigger, setTrigger, fileName, server, fileTitle, fileDescription }) {
 
     const [currentServer, setCurrentServer] = useState("");
     const [triggerPlayerWindow, setTriggerPlayerWindow] = useState(false);
@@ -16,7 +16,6 @@ export default function Player({ trigger, setTrigger, fileName, server }) {
                 else if (server === "elegance") setCurrentServer(eleganceRequestRoute);
                 const delay = await new Promise(res => setTimeout(res, 0));
                 setTriggerPlayerWindow(true);
-                console.log("gadga");
             }
         }; defaultServer();
     }, [trigger]);
@@ -37,30 +36,37 @@ export default function Player({ trigger, setTrigger, fileName, server }) {
             {
                 (trigger === true) ?
                     (<PlayerWindow>
-                        <div id="serverButtons">
-                            {
-                                (server === "both") ?
-                                    (
-                                        <div>
-                                            <div onClick={() => { serverChange("elegance"); }}>Elegance</div>
-                                            <div onClick={() => { serverChange("mongo"); }}>Mongo</div>
-                                        </div>
-                                    )
-                                    :
-                                    (<div>This Video is available in only {server}</div>)
-                            }
+                        <div className="topBanner">
+                            <div className="serverInformation">
+                                {
+                                    (server === "both") ?
+                                        (
+                                            <div className="serverButtons">
+                                                <p className="normalServerTag">Change Server: </p>
+                                                <button className="actions" onClick={() => { serverChange("elegance"); }}>Elegance</button>
+                                                <button className="actions" onClick={() => { serverChange("mongo"); }}>Mongo</button>
+                                            </div>
+                                        )
+                                        :
+                                        (<div className="normalServerTag">This video is available in {server} server only.</div>)
+                                }
+                            </div>
+                            <button className="actions" onClick={() => { setTrigger(false); setTriggerPlayerWindow(false); }}>Close</button>
                         </div>
-                        <div>
-                            {
-                                (triggerPlayerWindow) ?
-                                    (<video id="videoPlayer" width="300" controls controlsList="noplaybackrate nodownload" muted autoPlay={true}>
-                                        <source src={`${currentServer}` + `${fileName}`} type="video/mp4" />
-                                    </video>)
-                                    :
-                                    (<div>Loading</div>)
-                            }
+                        <div className="playerBox">
+                            <div className="player">
+                                {
+                                    (triggerPlayerWindow) ?
+                                        (<video id="videoPlayer" controls controlsList="noplaybackrate nodownload" muted autoPlay={true}>
+                                            <source src={`${currentServer}` + `${fileName}`} type="video/mp4" />
+                                        </video>)
+                                        :
+                                        ("")
+                                }
+                            </div>
+                            <p className="title">{fileTitle}</p>
+                            <p className="description">{fileDescription}</p>
                         </div>
-                        <button onClick={() => { setTrigger(false); setTriggerPlayerWindow(false); }}>Close</button>
                     </PlayerWindow>)
                     :
                     ("")

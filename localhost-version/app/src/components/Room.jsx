@@ -3,12 +3,12 @@ import styled from "styled-components";
 import "react-toastify/dist/ReactToastify.css";
 import Share from "../components/Share";
 
-export default function Room({ divName, roomMembers, roomJoinedName, isRoomCreated, isSharingMedia, isRecievingMedia, doWait, inRoom, hideShareButton, showShareButton, socket }) {
+export default function Room({ roomPlayerFileName, roomPlayerFileServer, roomPlayerFileTitle, roomPlayerFileDescription, divName, roomMembers, roomJoinedName, isRoomCreated, isSharingMedia, isRecievingMedia, doWait, inRoom, hideShareButton, showShareButton, socket }) {
     return (
         <RoomWindow>
             <div id={divName}>
                 <div id="media">
-                    <Share isSharingMedia={isSharingMedia} isRecievingMedia={isRecievingMedia} roomName={roomJoinedName} hideShareButton={hideShareButton} showShareButton={showShareButton} socket={socket} />
+                    <Share roomPlayerFileName={roomPlayerFileName} roomPlayerFileServer={roomPlayerFileServer} roomPlayerFileTitle={roomPlayerFileTitle} roomPlayerFileDescription={roomPlayerFileDescription} isSharingMedia={isSharingMedia} isRecievingMedia={isRecievingMedia} roomName={roomJoinedName} roomMembers={roomMembers} hideShareButton={hideShareButton} showShareButton={showShareButton} socket={socket} />
                 </div>
                 <div id="roomInfo">
                     <button>Owner</button>

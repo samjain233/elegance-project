@@ -309,42 +309,127 @@ export default function Home() {
 const HomeContainer = styled.div`
 height: 100vh;
 width: 100vw;
-background-color: pink;
+
+.button {
+  appearance: none;
+  background-color: #FFFFFF;
+  border-width: 0;
+  box-sizing: border-box;
+  color: #000000;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Helvetica;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1em;
+  margin: 0;
+  opacity: 1;
+  outline: 0;
+  padding: 1.5em 2.2em;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  text-rendering: geometricprecision;
+  text-transform: uppercase;
+  transition: opacity 300ms cubic-bezier(.694, 0, 0.335, 1),background-color 100ms cubic-bezier(.694, 0, 0.335, 1),color 100ms cubic-bezier(.694, 0, 0.335, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+.button:before {
+  animation: opacityFallbackOut .5s step-end forwards;
+  backface-visibility: hidden;
+  background-color: #EBEBEB;
+  clip-path: polygon(-1% 0, 0 0, -25% 100%, -1% 100%);
+  content: "";
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transform: translateZ(0);
+  transition: clip-path .5s cubic-bezier(.165, 0.84, 0.44, 1), -webkit-clip-path .5s cubic-bezier(.165, 0.84, 0.44, 1);
+  width: 100%;
+}
+
+.button:hover:before {
+  animation: opacityFallbackIn 0s step-start forwards;
+  clip-path: polygon(0 0, 101% 0, 101% 101%, 0 101%);
+}
+
+.button:after {
+  background-color: #FFFFFF;
+}
+
+.button span {
+  z-index: 1;
+  position: relative;
+}
+
  #header{
+  border-width: 2px;
   display: flex;
   width: 100vw;
   height: 10vh;
   align-items: center;
-  justify-content: right;
-  background-color: black;
+  justify-content: space-between;
+  background-color: white;
+   #elegance{
+    font-family: Helvetica;
+    text-transform: uppercase;
+    padding-left: 10px;
+    font-size: 30px;
+    height 10vh;
+    display:flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: center;
+   }
    #navigate{
-    width: 50vw;
     height: 5vh;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: right;
      #notInRoom{
-      width: 25vw;
       height: 5vh;
       display: flex;
       align-items: center;
-      justify-content: space-around;
+      justify-content: space-between;
+      .form__field{
+        padding: 3px;
+        width: 13rem;
+        height: 2rem;
+        opacity: 0.6;
+        border-style: solid;
+        border-color: black;
+        border-width: 2px;
+        border-radius: 9px;
+        transition: 0.3s;
+      }
+      .form__field:hover {
+        opacity: 1;
+        border-style: solid;
+        border-color: red;
+        border-width: 2px;
+      }
      }
      #inRoom{
-      width: 25vw;
       height: 5vh;
       display: flex;
       align-items: center;
-      justify-content: space-around;
+      justify-content: space-between;
      }
     }
    }
  #body{
-  display: flex;
+  background-color: white;
   width: 100vw;
   height: 90vh;
-  margin: auto;
-  align-items: flex-end;
+  display: flex;
+  align-items: center;
   justify-content: center;
  }
 `;

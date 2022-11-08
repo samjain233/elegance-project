@@ -86,7 +86,7 @@ export default function Videos({ setRoomPopupDiv, isSharingMedia, setRoomPlayerF
                                 {
                                     playlistList.map((playlist) => {
                                         return (
-                                            <div className="playlist" onClick={() => { addVideoToPlaylist(videoToAdd, playlist.playlistName); }} key={playlist._id}>
+                                            <div className="playlist" key={playlist._id}>
                                                 <p className="playlistText" onClick={() => { addVideoToPlaylist(videoToAdd, playlist.playlistName); }}>{playlist.playlistName}</p>
                                             </div>
                                         )
@@ -104,8 +104,8 @@ export default function Videos({ setRoomPopupDiv, isSharingMedia, setRoomPlayerF
                     return (
                         <div className="video" key={video._id}>
                             <div id="videoInfo">
-                                <p>{video.title}</p>
-                                <p>{video.description}</p>
+                                <p className="nowrap">{video.title}</p>
+                                <p className="nowrap">{video.description}</p>
                             </div>
                             <div id="videoActions">
                                 <p className="videoActions" onClick={() => playVideo(video.name, video.server, video.title, video.description)}>Play</p>
@@ -136,6 +136,9 @@ overflow: auto;
 color: black;
 display: flex;
 flex-direction: column;
+.nowrap {
+    white-space: nowrap;
+}
 &::-webkit-scrollbar {
     background-color: black;
     width: 0.2rem;
@@ -201,7 +204,7 @@ flex-direction: column;
  .video{
     background-color: white;
     padding: 10px;
-    border-top: 1px solid black;
+    border-bottom: 1px solid black;
     border-left: 1px solid black;
     border-right: 1px solid black;
     display: flex;

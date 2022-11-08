@@ -1,4 +1,4 @@
-const { Users } = require("../collections/mongoCollections");
+const { Users, Playlist } = require("../collections/mongoCollections");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 
@@ -44,6 +44,10 @@ module.exports.register = async (req, res, next) => {
         const userAdd = await Users.insertOne({ email: email, username: username, password: hashedPassword, verificationCode: verificationCode, isVerified: false, mediaCount: 0 });
         {
             if (!userAdd.acknowledged) return res.json({ msg: "Something Went Wrong", status: false });
+        }
+        const playlistAdd = await Playlist.insertOne({ username: username, playlistName: "Favorites", videos: [] });
+        {
+            if (!playlistAdd.acknowledged) return res.json({ msg: "Something Went Wrong", status: false });
         }
         const user = await Users.findOne({ username: username });
         const localID = { ID: user._id, username: user.username, isVerified: user.isVerified };

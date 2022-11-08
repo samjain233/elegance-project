@@ -11,7 +11,7 @@ import { host } from "../Routes";
 import cryptoRandomString from 'crypto-random-string';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { playlistRequestRoute } from "../Routes";
+import { playlistRequestRoute, playlistDeleteRoute } from "../Routes";
 
 export default function Home() {
   //checking key to access home page, otherwise redirect to login page
@@ -205,6 +205,17 @@ export default function Home() {
   }, []);
 
 
+  const deletePlaylist = async (playlistName) => {
+    const localID = await JSON.parse(localStorage.getItem(process.env.WEBSITE_LOCALHOST_KEY));
+    const username = localID.username;
+    const { data } = await axios.post(playlistDeleteRoute, { username, playlistName });
+    if (data.status === true) {
+      setPlaylistList(data.playlist);
+      toast("Playlist Deleted");
+    }
+  };
+
+
 
   const handleChange = (event) => { setValues({ ...values, [event.target.name]: event.target.value }) };
 
@@ -282,7 +293,7 @@ export default function Home() {
               )
           }
           <button className="button"><span className="text">Profile</span></button>
-          <button className="button" onClick={() => {setUploadPopup(true); console.log(roomPlayerFileName);}}><span className="text">Upload</span></button>
+          <button className="button" onClick={() => { setUploadPopup(true); console.log(roomPlayerFileName); }}><span className="text">Upload</span></button>
           <button className="button" onClick={() => setPanel("videos")}><span className="text">Videos</span></button>
           <button className="button" onClick={() => { setPanel("playlist"); }}><span className="text">Playlist</span></button>
         </div>
@@ -297,7 +308,7 @@ export default function Home() {
             )
             :
             (
-              <Playlist setRoomPopupDiv={setRoomPopupDiv} setRoomPlayerFileName={setRoomPlayerFileName} setRoomPlayerFileServer={setRoomPlayerFileServer} setRoomPlayerFileTitle={setRoomPlayerFileTitle} setRoomPlayerFileDescription={setRoomPlayerFileDescription} isSharingMedia={isSharingMedia} playlistList={playlistList} setPlaylistList={setPlaylistList} />
+              <Playlist deletePlaylist={deletePlaylist} setRoomPopupDiv={setRoomPopupDiv} setRoomPlayerFileName={setRoomPlayerFileName} setRoomPlayerFileServer={setRoomPlayerFileServer} setRoomPlayerFileTitle={setRoomPlayerFileTitle} setRoomPlayerFileDescription={setRoomPlayerFileDescription} isSharingMedia={isSharingMedia} playlistList={playlistList} setPlaylistList={setPlaylistList} />
             )
         }
       </div>
@@ -374,6 +385,7 @@ width: 100vw;
   display: flex;
   width: 100vw;
   height: 10vh;
+  border-bottom: 1px solid black;
   align-items: center;
   justify-content: space-between;
   background-color: white;

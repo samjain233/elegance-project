@@ -9,7 +9,7 @@ import { playlistSaveRoute } from "../Routes";
 import { playlistVideosRoute } from "../Routes";
 import { v4 as uuidv4 } from "uuid";
 
-export default function Playlist({ setRoomPopupDiv, isSharingMedia, setRoomPlayerFileName, setRoomPlayerFileServer, setRoomPlayerFileTitle, setRoomPlayerFileDescription, playlistList, setPlaylistList }) {
+export default function Playlist({ deletePlaylist, setRoomPopupDiv, isSharingMedia, setRoomPlayerFileName, setRoomPlayerFileServer, setRoomPlayerFileTitle, setRoomPlayerFileDescription, playlistList, setPlaylistList }) {
 
     const toastOptions = { position: "bottom-right", autoClose: 5000, pauseOnHover: true, draggable: true, theme: "light" };
     const [playlistVideos, setPlaylistVideos] = useState([]);
@@ -46,12 +46,9 @@ export default function Playlist({ setRoomPopupDiv, isSharingMedia, setRoomPlaye
         const localID = await JSON.parse(localStorage.getItem(process.env.WEBSITE_LOCALHOST_KEY));
         const username = localID.username;
         const { data } = await axios.post(playlistVideosRoute, { playlistName, username });
-        if (data.status === false) { toast.error(data.msg, toastOptions) }
-        else if (data.status === true) {
-            setPlaylistVideos(data.playlistVideos.videos);
-            if (data.playlistVideos.videos.length === 0) toast.error("No Videos Available", toastOptions);
-        }
-        console.log(data.playlistVideos.videos);
+        setPlaylistVideos(data.playlistVideos);
+        if (data.playlistVideos.length === 0) toast.error("No Videos Available", toastOptions);
+        else setShowPlaylistVideosPopup(true);
 
     }
 
@@ -90,13 +87,12 @@ export default function Playlist({ setRoomPopupDiv, isSharingMedia, setRoomPlaye
                                         playlistVideos.map((playlistVideo) => {
                                             return (
                                                 <div className="playlistVideo" key={uuidv4()}>
-                                                    <p>{playlistVideo.title}</p>
+                                                    <p className="text">{playlistVideo.title}</p>
                                                     <p className="actions" onClick={() => { setShowPlaylistVideosPopup(false); playVideo(playlistVideo.name, playlistVideo.server, playlistVideo.title, playlistVideo.description) }}>Play</p>
                                                     {
                                                         (isSharingMedia) ?
                                                             (<p className="actions" onClick={() => { setShowPlaylistVideosPopup(false); setRoomPlayerFileName(playlistVideo.name); setRoomPlayerFileServer(playlistVideo.server); setRoomPlayerFileTitle(playlistVideo.title); setRoomPlayerFileDescription(playlistVideo.description); setRoomPopupDiv("roomContainer"); }}>In Room</p>) : ("")
                                                     }
-                                                    <p className="actions">Delete</p>
                                                 </div>
                                             )
                                         })
@@ -114,16 +110,20 @@ export default function Playlist({ setRoomPopupDiv, isSharingMedia, setRoomPlaye
             </form>
             <div className="playlistList">
                 {
-
                     (playlistList.length) ?
                         <div className="playlistListBox">
                             {
                                 (
                                     playlistList.map((playlist) => {
                                         return (
-                                            <div className="playlist" onClick={() => getPlaylistVideos(playlist.playlistName)} key={playlist._id}>
-                                                <p className="playlistActions" onClick={() => { getPlaylistVideos(); setShowPlaylistVideosPopup(true); }}>{playlist.playlistName}</p>
-                                                <p className="playlistActions">Delete</p>
+                                            <div className="playlist" key={playlist._id}>
+                                                <p className="playlistActions" onClick={() => getPlaylistVideos(playlist.playlistName)}>{playlist.playlistName}</p>
+                                                {
+                                                    (playlist.playlistName === "Favorites") ?
+                                                        (<p className="playlistActions" onClick={() => getPlaylistVideos(playlist.playlistName)}>Open</p>)
+                                                        :
+                                                        (<p className="playlistActions" onClick={() => deletePlaylist(playlist.playlistName)}>Delete</p>)
+                                                }
                                             </div>
                                         )
                                     })
@@ -143,6 +143,11 @@ background-color: white;
 width: 100vw;
 height: 90vh;
 color: black;
+.text{
+    width: 200px;
+    white-space: nowrap;
+    overflow:hidden;
+}
  .playlistVideosBox{
     display: flex;
     flex-direction: column;

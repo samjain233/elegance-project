@@ -50,13 +50,13 @@ io.on("connection", (socket) => {
         await socket.join(payload.roomName);
         if (roomsByUsername[payload.username]) roomsByUsername[payload.username].activeRooms.push(payload.roomName);
         else roomsByUsername[payload.username] = { username: payload.username, activeRooms: [payload.roomName] };
-        rooms[payload.roomName] = { owner: [payload.username], visitors: [] };
+        rooms[payload.roomName] = { owner: [payload.username], visitors: [], banned: [] };
         socket.to(payload.roomName).emit("room-update", rooms[payload.roomName]);
     });
 
     //when user send request
     socket.on("send-join-request", async (payload) => {
-        if (rooms[payload.roomName]) {
+        if (rooms[payload.roomName] && !rooms[payload.roomName].banned.includes(payload.username)) {
             socket.to(onlineUsers.get(rooms[payload.roomName].owner[0])).emit("recieve-join-request", payload.username);
         }
     });
@@ -131,6 +131,16 @@ io.on("connection", (socket) => {
     socket.on("disconnect-request", () => {
         socket.disconnect(true);
         delete users[socket.id];
+    });
+
+    //kick request from admin
+    socket.on("kick-request", (payload) => {
+        socket.to(onlineUsers.get(payload.username)).emit("kick-request-accept", payload.roomName);
+    });
+
+    socket.on("ban-request", (payload) => {
+        rooms[payload.roomName].banned.push(payload.username);
+        socket.to(onlineUsers.get(payload.username)).emit("kick-request-accept", payload.roomName);
     });
 
     //room media part

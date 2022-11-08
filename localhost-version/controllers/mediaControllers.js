@@ -213,9 +213,15 @@ module.exports.playlistRequest = async (req, res, next) => {
 module.exports.playlistUpdate = async (req, res, next) => {
     try {
         const { videoToAdd, playlistName, username } = req.body;
+        const findPlaylist = await Playlist.findOne({ username: username, playlistName: playlistName });
+        const videosList = findPlaylist.videos;
+        if (videosList.filter(e => e.name === videoToAdd.name).length) {
+            console.log(videosList.filter(e => e.name === videoToAdd.name).length);
+            return res.json({ msg: "Video already exist", status: false });
+        }
         const videoAdd = await Playlist.updateOne({ username: username, playlistName: playlistName }, { $push: { videos: videoToAdd } });
         {
-            if (!videoAdd.acknowledged) return res.json({ msg: "Something Went Wrong", status: false });
+            if (!videoAdd.acknowledged) return res.json({ msg: "Something went wrong", status: false });
         }
         return res.json({ msg: "Video successfully added", status: true });
     }
@@ -229,10 +235,19 @@ module.exports.playlistVideos = async (req, res, next) => {
     try {
         const { playlistName, username } = req.body;
         const playlistVideos = await Playlist.findOne({ username: username, playlistName: playlistName });
-        {
-            if (!playlistVideos.videos) return res.json({ msg: "Something went wrong", status: false });
-        }
-        return res.json({ status: true, playlistVideos: playlistVideos });
+        return res.json({ status: true, playlistVideos: playlistVideos.videos });
+    }
+    catch (ex) {
+        next(ex);
+    }
+};
+
+module.exports.playlistDelete = async (req, res, next) => {
+    try {
+        const { playlistName, username } = req.body;
+        const result = await Playlist.deleteOne({ username: username, playlistName: playlistName });
+        const playlist = await Playlist.find({ username: username }).toArray();
+        return res.json({ status: true, playlist: playlist });
     }
     catch (ex) {
         next(ex);

@@ -7,6 +7,7 @@ export const playlistSaveRoute = `${host}/api/auth/playlistSave`;
 export const playlistRequestRoute = `${host}/api/auth/playlistRequest`;
 export const playlistUpdateRoute = `${host}/api/auth/playlistUpdate`;
 export const playlistVideosRoute = `${host}/api/auth/playlistVideos`;
+export const playlistDeleteRoute = `${host}/api/auth/playlistDelete`;
 export const eleganceRoute = `${host}/api/auth/eleganceServer`;
 export const mongoRoute = `${host}/api/auth/mongoServer`;
 export const emRoute = `${host}/api/auth/emServer`;

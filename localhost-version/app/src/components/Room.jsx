@@ -2,8 +2,29 @@ import React from "react";
 import styled from "styled-components";
 import "react-toastify/dist/ReactToastify.css";
 import Share from "../components/Share";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Room({ roomPlayerFileName, roomPlayerFileServer, roomPlayerFileTitle, roomPlayerFileDescription, divName, roomMembers, roomJoinedName, isRoomCreated, isSharingMedia, isRecievingMedia, doWait, inRoom, hideShareButton, showShareButton, socket }) {
+
+    const roomAdminAction = (visitor) => {
+        if (isRoomCreated) {
+            console.log(visitor);
+            toast(
+                <div>
+                    Actions: {visitor}
+                    <button onClick={() => {
+                        const payload = { roomName: roomJoinedName, username: visitor };
+                        socket.current.emit("kick-request", payload);
+                    }
+                    }>Kick</button>
+                    <button onClick={() => {
+                        const payload = { roomName: roomJoinedName, username: visitor };
+                        socket.current.emit("ban-request", payload);
+                    }}>Ban</button>
+                </div>
+            );
+        }
+    }
     return (
         <RoomWindow>
             <div id={divName}>
@@ -11,14 +32,12 @@ export default function Room({ roomPlayerFileName, roomPlayerFileServer, roomPla
                     <Share roomPlayerFileName={roomPlayerFileName} roomPlayerFileServer={roomPlayerFileServer} roomPlayerFileTitle={roomPlayerFileTitle} roomPlayerFileDescription={roomPlayerFileDescription} isSharingMedia={isSharingMedia} isRecievingMedia={isRecievingMedia} roomName={roomJoinedName} roomMembers={roomMembers} hideShareButton={hideShareButton} showShareButton={showShareButton} socket={socket} />
                 </div>
                 <div id="roomInfo">
-                    <button>Owner</button>
-                    <button className="button">{roomMembers.owner}</button>
-                    <button>Visitors</button>
+                    <button className="buttonNoAction"><span className="text">{roomMembers.owner}</span></button>
                     {
                         roomMembers.visitors.map((visitor) => {
                             return (
                                 <div key={visitor}>
-                                    <button className="button">{visitor}</button>
+                                    <button onClick={() => roomAdminAction(visitor)} className={`${isRoomCreated ? "buttonsAction" : "buttonNoAction"}`}><span className="text">{visitor}</span></button>
                                 </div>
                             )
                         })

@@ -35,7 +35,8 @@ const RoomWindow = styled.div`
     display: none !important;
 }
 #roomContainer{
-    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    background-color: white;
     height: 90vh;
     width: 100vw;
     position: fixed;
@@ -51,7 +52,7 @@ const RoomWindow = styled.div`
      height: 10vh;
      width: 100vw;
      background-color: black;
-     overflow: auto;
+     overflow-x: auto;
      button{
         width: 100px;
         height: 40px;

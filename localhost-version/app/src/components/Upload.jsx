@@ -102,7 +102,8 @@ export default function Upload({ trigger, setTrigger }) {
 
 // styling of components
 const UploadWindow = styled.div`
-background-color: rgba(0, 0, 0, 0.2);
+z-index: 3;
+background-color: rgba(0, 0, 0, 0.7);
 height: 100vh;
 width: 100vw;
 position: fixed;
@@ -110,7 +111,21 @@ display: flex;
 flex-direction: column;
 justify-content: center;
 align-items: center;
+.buttonUpload{
+  background-color: white;
+  border: none;
+  opacity: 0.6;
+  transition: 0.3s;
+  font-size: 17px;
+}
+.buttonUpload: hover{
+  cursor: pointer;
+  opacity: 1;
+}
 #container {
+  border-style: solid;
+  border-color: white;
+  border-radius: 10px;
   height: 50vh;
   width: 70vw;
   background-color: white;
@@ -130,12 +145,43 @@ align-items: center;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      .form__field{
+        margin: 2px;
+        padding: 5px;
+        width: 13rem;
+        height: 1.8rem;
+        opacity: 0.6;
+        border-style: solid;
+        border-color: black;
+        border-width: 2px;
+        border-radius: 9px;
+        transition: 0.3s;
+      }
+      .form__field:hover {
+        opacity: 1;
+        border-style: solid;
+        border-color: red;
+        border-width: 2px;
+      }
     }
     #button-box{
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      .buttonUpload{
+        background-color: white;
+        border: none;
+        margin-left: 100px;
+        padding: 2px;
+        opacity: 0.6;
+        transition: 0.3s;
+        font-size: 17px;
+     }
+     .buttonUpload: hover{
+        cursor: pointer;
+        opacity: 1;
+     }
     }
   }
 }

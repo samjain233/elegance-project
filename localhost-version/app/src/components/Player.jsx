@@ -77,21 +77,71 @@ export default function Player({ trigger, setTrigger, fileName, server, fileTitl
 
 // styling of components
 const PlayerWindow = styled.div`
-background-color: rgba(0, 0, 0, 0.7 );
+z-index: 2;
+background-color: white;
 height: 90vh;
 width: 100vw;
 position: fixed;
 display: flex;
 flex-direction: column;
-justify-content: center;
-align-items: center;
- #serverButtons {
-    color: white;
-    background-color: blue;
+.normalServerTag{
+    background-color: white;
+    border: none;
+    margin-left: 100px;
+    opacity: 1;
+    font-size: 23px;
+}
+.actions{
+    background-color: white;
+    border: none;
+    margin-left: 100px;
+    opacity: 0.6;
+    transition: 0.3s;
+    font-size: 20px;
+    cursor: pointer;
+}
+ .actions: hover {
+    opacity: 1;
+    color: black;
+}
+.topBanner{
+    height: 10vh;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
     align-items: center;
+    justify-content: space-around;
+     .serverInformation{
+        display: flex;
+        align-items: center;
+        .serverButtons{
+            display: flex;
+            align-items: center;
+        }
+    }
+}
+.playerBox{
+    margin-left: 20px;
+    height: 70vh;
+    width: 50vw;
+    overflow: hidden;
+    .player{
+        background-color: black;
+        height: 55vh;
+        display: flex;
+        align-items: center;
+        video{
+            width: 50vw;
+            max-height: 60vh;
+        }
+    }
+    .title{
+        padding-top: 10px;
+        padding-left: 5px;
+        font-size: 30px;
+    }
+     .description {
+        padding-left: 5px;
+        opacity: 0.7;
+        font-size: 20px;
     }
 }
 `;

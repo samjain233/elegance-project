@@ -282,49 +282,84 @@ export default function Share({ roomPlayerFileName, roomPlayerFileServer, roomPl
 
 // styling of components
 const Container = styled.div`
+z-index: 10;
 height: 80vh;
 background-color: rgba(300, 300, 300, 0.2);
 display: flex;
 justify-content: center;
 align-items: center;
 color: black;
- #primaryRoomScreen{
+.recieverMeta{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    div{
+        .title{
+            padding-top: 10px;
+            padding-left: 5px;
+            font-size: 30px;
+        }
+         .description {
+            padding-left: 5px;
+            opacity: 0.7;
+            font-size: 20px;
+        }
+    }
+    button{
+        padding-right: 10px;
+    }
+}
+#primaryRoomScreen{
   height: 80vh;
   width: 100vw;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-   #videoPlayerCover{
-    color: white;
-    width: 30vw;
-    height: 30vh;
-    background-color: brown;
-    display: flex;
-    flex-direction: column;
-    justify content: center;
-    align items: center;
-    margin: auto;
-     #serverButtons{
-      display: flex;
-      flex-direction: rows;
-      justify content: center;
-      align items: center;
-     }
-    }
-   #videoPlayerDiv{
-    display: flex;
-    justify content: center;
-    align items: center;
-    margin:auto;
-    }
-   #videos{
-    background-color: brown;
-    width: 50vw;
-    height: 80vh;
-    overflow: auto;
-    }
-   .video{
+}
+.normalServerTag{
     background-color: white;
-    margin: 5px;
+    border: none;
+    margin-left: 100px;
+    opacity: 1;
+    font-size: 23px;
+}
+.actions{
+    background-color: white;
+    border: none;
+    margin-left: 100px;
+    opacity: 0.6;
+    transition: 0.3s;
+    font-size: 20px;
+    cursor: pointer;
+}
+ .actions: hover {
+    opacity: 1;
+    color: black;
+}
+.topBanner{
+    height: 10vh;
+    display: flex;
+    align-items: center;
+     .serverInformation{
+        display: flex;
+        align-items: center;
+        .serverButtons{
+            display: flex;
+            align-items: center;
+        }
     }
- }
+}
+.playerBox{
+    margin-left: 20px;
+    height: 70vh;
+    width: 50vw;
+    overflow: hidden;
+    .player{
+        background-color: black;
+        height: 55vh;
+        display: flex;
+        align-items: center;
+        video{
+            width: 50vw;
+            max-height: 60vh;
+        }
+    }
+}
 `;  

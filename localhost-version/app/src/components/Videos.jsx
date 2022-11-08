@@ -130,16 +130,103 @@ export default function Videos({ setRoomPopupDiv, isSharingMedia, setRoomPlayerF
 
 // styling of components
 const Container = styled.div`
-background-color: rgba(0, 0, 0, 0.2);
 width: 100vw;
 height: 90vh;
-background-color: black;
 overflow: auto;
 color: black;
 display: flex;
 flex-direction: column;
+&::-webkit-scrollbar {
+    background-color: black;
+    width: 0.2rem;
+    &-thumb {
+      background-color: white;
+      width: 0.1rem;
+      border-radius: 1rem;
+    }
+  }
+.playlistsList{
+    background-color: white;
+    width: 100vw;
+    height: 90vh;
+    position: fixed;
+    z-index: 1;
+    .buttonDiv{
+        height: 10vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        button{
+            background-color: white;
+            border: none;
+            opacity: 0.6;
+            transition: 0.3s;
+            font-size: 25px;
+        }
+        button: hover{
+            cursor: pointer;
+            opacity: 1;
+        }
+    }
+    .playlists{
+        height: 80vh;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        &::-webkit-scrollbar {
+            background-color: black;
+            width: 0.2rem;
+            &-thumb {
+              background-color: white;
+              width: 0.1rem;
+              border-radius: 1rem;
+            }
+          }
+        .playlist{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 10vh;
+            .playlistText{
+                opacity: 0.6;
+                transition: 0.3s;
+                font-size: 20px;
+            }
+            .playlistText: hover{
+                cursor: pointer;
+                opacity: 1;
+            }
+        }
+    }
+}
  .video{
     background-color: white;
-    margin: 5px;
+    padding: 10px;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    display: flex;
+    justify-content: space-between;
+     #videoInfo{
+        width: 30vw;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        }
+     .videoActions{
+        cursor: pointer;
+        opacity: 0.7;
+        transition: 0.3s;
+    }
+     .videoActions:hover {
+        opacity: 1;
+        color: black;
+    }
+     #videoActions{
+        margin-left: 100px;
+        padding: 10px;
+        width: 70vw;
+        display: flex;
+        justify-content: space-between;
+        }
  }
 `;

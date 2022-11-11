@@ -57,7 +57,7 @@ export default function Player({ trigger, setTrigger, fileName, server, fileTitl
                             <div className="player">
                                 {
                                     (triggerPlayerWindow) ?
-                                        (<video id="videoPlayer" controls controlsList="noplaybackrate nodownload" muted autoPlay={true}>
+                                        (<video id="videoPlayer" controls controlsList="noplaybackrate nodownload" autoPlay={true}>
                                             <source src={`${currentServer}` + `${fileName}`} type="video/mp4" />
                                         </video>)
                                         :

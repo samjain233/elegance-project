@@ -95,6 +95,21 @@ export default function Home() {
           setRoomJoinedName("");
           setRoomMembers({ owner: [], visitors: [] });
         });
+        socket.current.on("kick-request-accept", async (roomName) => {
+          const localID = await JSON.parse(localStorage.getItem(process.env.WEBSITE_LOCALHOST_KEY));
+          const payload = { roomName: roomName, username: localID.username }
+          socket.current.emit("exit-room", payload);
+          setRoomPlayerFileName("");
+          setRoomPlayerFileTitle("");
+          setRoomPlayerFileServer("");
+          setRoomPlayerFileDescription("");
+          setRoomPopupDiv("roomContainerHidden");
+          setIsRecievingMedia(false);
+          setIsSharingMedia(false);
+          setInRoom(false);
+          setRoomJoinedName("");
+          setRoomMembers({ owner: [], visitors: [] });
+        });
       }
     }; roomUpdate();
   }, [inRoom]);
@@ -299,7 +314,7 @@ export default function Home() {
         </div>
       </div>
       <Upload trigger={uploadPopup} setTrigger={setUploadPopup} />
-      <Room roomPlayerFileName={roomPlayerFileName} roomPlayerFileServer={roomPlayerFileServer} roomPlayerFileTitle={roomPlayerFileTitle} roomPlayerFileDescription={roomPlayerFileDescription} divName={roomPopupDiv} roomMembers={roomMembers} roomJoinedName={roomJoinedName} isRoomCreated={isRoomCreated} isSharingMedia={isSharingMedia} isRecievingMedia={isRecievingMedia} doWait={doWait} inRoom={inRoom} hideShareButton={hideShareButton} showShareButton={showShareButton} socket={socket} />
+      <Room setRoomMembers={setRoomMembers} roomPlayerFileName={roomPlayerFileName} roomPlayerFileServer={roomPlayerFileServer} roomPlayerFileTitle={roomPlayerFileTitle} roomPlayerFileDescription={roomPlayerFileDescription} divName={roomPopupDiv} roomMembers={roomMembers} roomJoinedName={roomJoinedName} isRoomCreated={isRoomCreated} isSharingMedia={isSharingMedia} isRecievingMedia={isRecievingMedia} doWait={doWait} inRoom={inRoom} hideShareButton={hideShareButton} showShareButton={showShareButton} socket={socket} />
       <div id="body">
         {
           (panel === "videos") ?

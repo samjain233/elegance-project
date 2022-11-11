@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Share from "../components/Share";
 import { ToastContainer, toast } from "react-toastify";
 
-export default function Room({ roomPlayerFileName, roomPlayerFileServer, roomPlayerFileTitle, roomPlayerFileDescription, divName, roomMembers, roomJoinedName, isRoomCreated, isSharingMedia, isRecievingMedia, doWait, inRoom, hideShareButton, showShareButton, socket }) {
+export default function Room({ setRoomMembers, roomPlayerFileName, roomPlayerFileServer, roomPlayerFileTitle, roomPlayerFileDescription, divName, roomMembers, roomJoinedName, isRoomCreated, isSharingMedia, isRecievingMedia, doWait, inRoom, hideShareButton, showShareButton, socket }) {
 
     const roomAdminAction = (visitor) => {
         if (isRoomCreated) {
@@ -15,11 +15,17 @@ export default function Room({ roomPlayerFileName, roomPlayerFileServer, roomPla
                     <button onClick={() => {
                         const payload = { roomName: roomJoinedName, username: visitor };
                         socket.current.emit("kick-request", payload);
+                        const roomVisitors = roomMembers.visitors;
+                        const newRoomVisitors = roomVisitors.filter(e => e !== visitor);
+                        setRoomMembers({ owner: [roomMembers.owner[0]], visitors: newRoomVisitors });
                     }
                     }>Kick</button>
                     <button onClick={() => {
                         const payload = { roomName: roomJoinedName, username: visitor };
                         socket.current.emit("ban-request", payload);
+                        const roomVisitors = roomMembers.visitors;
+                        const newRoomVisitors = roomVisitors.filter(e => e !== visitor);
+                        setRoomMembers({ owner: [roomMembers.owner[0]], visitors: newRoomVisitors });
                     }}>Ban</button>
                 </div>
             );
